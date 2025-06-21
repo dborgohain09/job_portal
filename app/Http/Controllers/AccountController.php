@@ -266,6 +266,7 @@ public function saveJob(Request $request){
         $fremaa_job->title=$request->title;
         $fremaa_job->category_id=$request->category;
         $fremaa_job->job_type_id=$request->jobType;
+        $fremaa_job->user_id=Auth::user()->id;
         $fremaa_job->vacancy=$request->vacancy;
         $fremaa_job->salary=$request->salary;
         $fremaa_job->location=$request->location;
@@ -296,10 +297,35 @@ public function saveJob(Request $request){
     }
 }
 
-//
+//this method will list the job for the logged in user
 public function myJobs(){
     
-    return view('front.account.job.my-jobs');
+    $jobs=Fremaa_job::where('user_id', Auth::user()->id)->with('jobType')->paginate(10);
+    return view('front.account.job.my-jobs', [
+        'jobs' => $jobs 
+    ]);
+}
+
+//This method will show the edit form
+public function editJob(Request $request, $id){
+
+     $categories = Category::orderBy('name', 'ASC')->where('status', 1)->get();
+
+    $jobTypes = JobType::orderBy('name', 'ASC')->where('status', 1)->get();
+
+    $job = Fremaa_job::where([
+        'user_id' =>Auth::user()->id,
+        'id' =>$id,
+    ])->first();
+
+    if ($job == null){
+        abort(404);
+    }
+    return view('front.account.job.edit',[
+        'categories' =>$categories,
+        'jobTypes' =>$jobTypes,
+        'job' => $job,
+    ]);
 }
 
 }
