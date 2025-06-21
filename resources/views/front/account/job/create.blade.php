@@ -28,6 +28,7 @@
                                             <div class="col-md-6 mb-4">
                                                 <label for="" class="mb-2">Title<span class="req">*</span></label>
                                                 <input type="text" placeholder="Job Title" id="title" name="title" class="form-control">
+                                                <p></p>
                                             </div>
                                             <div class="col-md-6  mb-4">
                                                 <label for="" class="mb-2">Category<span class="req">*</span></label>
@@ -39,25 +40,27 @@
                                                         @endforeach
                                                     @endif
                                                 </select>
+                                                <p></p>
                                             </div>
                                         </div>
                                         
                                         <div class="row">
                                             <div class="col-md-6 mb-4">
-                                                <label for="" class="mb-2">Job Nature<span class="req">*</span></label>
-                                                <select class="form-select">
+                                                <label for="" class="mb-2">Job Type<span class="req">*</span></label>
+                                                <select name="jobType" id="jobType" class="form-select">
                                                     <option value="">Select Job Nature</option>
-
                                                     @if($jobTypes->isNotEmpty())
                                                         @foreach ($jobTypes as $jobType)
                                                             <option value="{{ $jobType->id }}">{{ $jobType->name }}</option>
                                                         @endforeach
                                                     @endif
                                                 </select>
+                                                <p></p>
                                             </div>
                                             <div class="col-md-6  mb-4">
                                                 <label for="" class="mb-2">Vacancy<span class="req">*</span></label>
                                                 <input type="number" min="1" placeholder="Vacancy" id="vacancy" name="vacancy" class="form-control">
+                                                <p></p>
                                             </div>
                                         </div>
 
@@ -69,13 +72,14 @@
 
                                             <div class="mb-4 col-md-6">
                                                 <label for="" class="mb-2">Location<span class="req">*</span></label>
-                                                <input type="text" placeholder="location" id="location" name="Location" class="form-control">
+                                                <input type="text" placeholder="location" id="location" name="location" class="form-control">
                                             </div>
                                         </div>
 
                                         <div class="mb-4">
                                             <label for="" class="mb-2">Description<span class="req">*</span></label>
                                             <textarea class="form-control" name="description" id="description" cols="5" rows="5" placeholder="Description"></textarea>
+                                            <p></p>
                                         </div>
                                         <div class="mb-4">
                                             <label for="" class="mb-2">Benefits</label>
@@ -90,10 +94,26 @@
                                             <textarea class="form-control" name="qualifications" id="qualifications" cols="5" rows="5" placeholder="Qualifications"></textarea>
                                         </div>
                                         
-                                        
+                                         <div class="mb-4">
+                                            <label for="" class="mb-2">Experiance<span class="req">*</span></label>
+                                            <select name="experience" id="experience" class="form-control">
+                                                <option value="1">1 Year</option>
+                                                <option value="2">2 Years</option>
+                                                <option value="3">3 Years</option>
+                                                <option value="4">4 Years</option>
+                                                <option value="5">5 Years</option>
+                                                <option value="6">6 Years</option>
+                                                <option value="7">7 Years</option>
+                                                <option value="8">8 Years</option>
+                                                <option value="9">9 Years</option>
+                                                <option value="10">10 Years</option>
+                                                <option value="10_plus">10+ Years</option>
+                                            </select>
+                                            <p></p>
+                                        </div>
 
                                         <div class="mb-4">
-                                            <label for="" class="mb-2">Keywords<span class="req">*</span></label>
+                                            <label for="" class="mb-2">Keywords</label>
                                             <input type="text" placeholder="keywords" id="keywords" name="keywords" class="form-control">
                                         </div>
 
@@ -103,11 +123,12 @@
                                             <div class="mb-4 col-md-6">
                                                 <label for="" class="mb-2">Name<span class="req">*</span></label>
                                                 <input type="text" placeholder="Company Name" id="company_name" name="company_name" class="form-control">
+                                                <p></p>
                                             </div>
 
                                             <div class="mb-4 col-md-6">
                                                 <label for="" class="mb-2">Location</label>
-                                                <input type="text" placeholder="Location" id="location" name="location" class="form-control">
+                                                <input type="text" placeholder="Company Location" id="company_location" name="company_location" class="form-control">
                                             </div>
                                         </div>
 
@@ -117,7 +138,7 @@
                                         </div>
                                     </div> 
                                     <div class="card-footer  p-4">
-                                        <button type="button" class="btn btn-primary">Save Job</button>
+                                        <button type="submit" class="btn btn-primary">Save Job</button>
                                     </div>               
                             </div> 
                 </form>
@@ -130,58 +151,145 @@
 
 @section('customJs')
 <script type="text/javascript">
-    $("#userForm").submit(function(e){
+    $("#createJobForm").submit(function(e){
         e.preventDefault(); // Stop form from submitting normally
 
         $.ajax({
-            url: '{{ route("account.updateProfile") }}',
-            type: 'PUT',
+            url: '{{ route("account.saveJob") }}',
+            type: 'POST',
             dataType: 'json',
             data: $(this).serialize(), // serialize current form
             success: function(response) {
                 if(response.status === true){
 
-                    $("input[name='name']").removeClass('is-invalid')   
+                    $("input[name='title']").removeClass('is-invalid')   
                         .siblings('p')
                         .removeClass('invalid-feedback')
                         .html('');
 
-                    $("input[name='email']").removeClass('is-invalid')
+                    $("input[name='category']").removeClass('is-invalid')
+                        .siblings('p')
+                        .removeClass('invalid-feedback')
+                        .html('');
+
+                    $("input[name='jobType']").removeClass('is-invalid')
+                        .siblings('p')
+                        .removeClass('invalid-feedback')
+                        .html('');
+
+                    $("input[name='vacancy']").removeClass('is-invalid')
+                        .siblings('p')
+                        .removeClass('invalid-feedback')
+                        .html('');
+
+                    $("input[name='location']").removeClass('is-invalid')
+                        .siblings('p')
+                        .removeClass('invalid-feedback')
+                        .html('');
+
+                    $("input[name='description']").removeClass('is-invalid')
                         .siblings('p')
                         .removeClass('invalid-feedback')
                         .html('');
                         
-                    window.location.href="{{ route('account.profile') }}";
+                    $("input[name='company_name']").removeClass('is-invalid')
+                        .siblings('p')
+                        .removeClass('invalid-feedback')
+                        .html('');
+
+                    window.location.href="{{ route('account.myJobs') }}";
                     // Optionally reload page or show a success message
                 } else {
+                    
                     var errors = response.errors;
 
-                    if(errors.name){
-                        $("input[name='name']").addClass('is-invalid')
+                    if(errors.title){
+                        $("input[name='title']").addClass('is-invalid')
                             .siblings('p')
                             .addClass('invalid-feedback')
-                            .html(errors.name);
+                            .html(errors.title);
                     } else {
-                        $("input[name='name']").removeClass('is-invalid')
+                        $("input[name='title']").removeClass('is-invalid')
                             .siblings('p')
                             .removeClass('invalid-feedback')
                             .html('');
                     }
 
-                    if(errors.email){
-                        $("input[name='email']").addClass('is-invalid')
+                    if(errors.category){
+                        $("select[name='category']").addClass('is-invalid')
                             .siblings('p')
                             .addClass('invalid-feedback')
-                            .html(errors.email);
+                            .html(errors.category);
                     } else {
-                        $("input[name='email']").removeClass('is-invalid')
+                        $("select[name='category']").removeClass('is-invalid')
+                            .siblings('p')
+                            .removeClass('invalid-feedback')
+                            .html('');
+                    }
+
+
+                    if(errors.jobType){
+                        $("select[name='jobType']").addClass('is-invalid')
+                            .siblings('p')
+                            .addClass('invalid-feedback')
+                            .html(errors.jobType);
+                    } else {
+                        $("select[name='jobType']").removeClass('is-invalid')
+                            .siblings('p')
+                            .removeClass('invalid-feedback')
+                            .html('');
+                    }
+
+                    if(errors.vacancy){
+                        $("input[name='vacancy']").addClass('is-invalid')
+                            .siblings('p')
+                            .addClass('invalid-feedback')
+                            .html(errors.vacancy);
+                    } else {
+                        $("input[name='vacancy']").removeClass('is-invalid')
+                            .siblings('p')
+                            .removeClass('invalid-feedback')
+                            .html('');
+                    }
+
+                    if(errors.company_location){
+                        $("input[name='company_location']").addClass('is-invalid')
+                            .siblings('p')
+                            .addClass('invalid-feedback')
+                            .html(errors.company_location);
+                    } else {
+                        $("input[name='company_location']").removeClass('is-invalid')
+                            .siblings('p')
+                            .removeClass('invalid-feedback')
+                            .html('');
+                    }
+
+                    if(errors.description){
+                        $("textarea[name='description']").addClass('is-invalid')
+                            .siblings('p')
+                            .addClass('invalid-feedback')
+                            .html(errors.description);
+                    } else {
+                        $("textarea[name='description']").removeClass('is-invalid')
+                            .siblings('p')
+                            .removeClass('invalid-feedback')
+                            .html('');
+                    }
+
+                    if(errors.company_name){
+                        $("input[name='company_name']").addClass('is-invalid')
+                            .siblings('p')
+                            .addClass('invalid-feedback')
+                            .html(errors.company_name);
+                    } else {
+                        $("input[name='company_name']").removeClass('is-invalid')
                             .siblings('p')
                             .removeClass('invalid-feedback')
                             .html('');
                     }
                 }
             },
-            error: function(xhr) {
+                error: function(xhr) {
                 console.log("Error occurred:", xhr.responseText);
                 alert("An error occurred while processing the request.");
             }

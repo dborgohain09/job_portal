@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Fremaa_job;
 use App\Models\JobType;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -240,6 +241,65 @@ public function createJob(){
         'categories' => $categories,
         'jobTypes' =>$jobTypes,
     ]);
+}
+
+//
+public function saveJob(Request $request){
+
+        
+    $rules=[
+        'title'=>'required|min:5|max:200',
+        'category' =>'required',
+        'jobType' =>'required',
+        'vacancy' =>'required|integer',
+        'location' =>'required|max:50',
+        'description' =>'required',
+        'company_name' =>'required|min:3|max:75',
+    ];
+    
+    $validator = Validator::make($request->all(),$rules);
+
+    if($validator->passes()){
+
+        $fremaa_job = new Fremaa_job();
+
+        $fremaa_job->title=$request->title;
+        $fremaa_job->category_id=$request->category;
+        $fremaa_job->job_type_id=$request->jobType;
+        $fremaa_job->vacancy=$request->vacancy;
+        $fremaa_job->salary=$request->salary;
+        $fremaa_job->location=$request->location;
+        $fremaa_job->description=$request->description;
+        $fremaa_job->benefits=$request->benefits;
+        $fremaa_job->responsibility=$request->responsibility;
+        $fremaa_job->qualifications=$request->qualifications;
+        $fremaa_job->experience=$request->experience;
+        $fremaa_job->keywords=$request->keywords;
+        $fremaa_job->company_name=$request->company_name;
+        $fremaa_job->company_location=$request->company_location;
+        $fremaa_job->company_website=$request->website;
+
+        $fremaa_job->save();
+
+        session()->flash('success', 'Job Details added successfully');
+
+        return response()->json([
+            'status'=>true,
+            'errors' =>[]
+        ]);
+
+    }else{
+        return response()->json([
+            'status'=>false,
+            'errors' =>$validator->errors()
+        ]);
+    }
+}
+
+//
+public function myJobs(){
+    
+    return view('front.account.job.my-jobs');
 }
 
 }
