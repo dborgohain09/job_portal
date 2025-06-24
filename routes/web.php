@@ -1,13 +1,16 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\Fremaa_jobsController;
 use App\Http\Controllers\HomeController;
+use App\Models\Fremaa_job;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
 //     return view('welcome');
 // });
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/jobs', [Fremaa_jobsController::class, 'index'])->name('jobs');
 
 
 // Route::get('/account/login', [AccountController::class, 'login'])->name('account.login');
@@ -37,4 +40,5 @@ Route::middleware('auth')->group(function () {
     Route::get('/account/my-jobs', [AccountController::class, 'myJobs'])->name('account.myJobs');
     Route::get('/account/my-jobs/edit/{jobId}', [AccountController::class, 'editJob'])->name('account.editJob');
     Route::post('/account/update-job/{jobId}', [AccountController::class, 'updateJob'])->name('account.updateJob');
+    Route::post('/account/delete-job', [AccountController::class, 'deleteJob'])->name('account.deleteJob');
 });

@@ -299,7 +299,7 @@ class AccountController extends Controller
     //this method will list the job for the logged in user
     public function myJobs(){
     
-        $jobs=Fremaa_job::where('user_id', Auth::user()->id)->with('jobType')->paginate(10);
+        $jobs=Fremaa_job::where('user_id', Auth::user()->id)->with('jobType')->orderBy('created_at', 'DESC')->paginate(10);
         return view('front.account.job.my-jobs', [
             'jobs' => $jobs 
         ]);
@@ -378,6 +378,28 @@ class AccountController extends Controller
                 'errors' =>$validator->errors()
             ]);
         }
+    }
+
+    //
+    public function deleteJob(Request $request) {
+        $job = Fremaa_job::where([
+            'user_id' => Auth::user()->id,
+            'id' => $request->jobId
+        ])->first();
+
+        if ($job == null){
+            session()->flash('error' ,'Either job deleted or not found.');
+            return response()->json([
+                'status' => true
+            ]);
+        }
+
+        Fremaa_job::where('id', $request->jobId)->delete();
+        session()->flash('success' ,'Job deleted sucessfully.');
+            return response()->json([
+                'status' => true
+            ]);
+
     }
 
 }
