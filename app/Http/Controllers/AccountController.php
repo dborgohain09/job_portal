@@ -179,153 +179,205 @@ class AccountController extends Controller
     // }
 
 
-    public function updateProfilePic(Request $request)
-{
-    $id = Auth::user()->id;
+    public function updateProfilePic(Request $request){
+        
+        $id = Auth::user()->id;
 
-    $validator = Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
         'image' => 'required|image'
-    ]);
-
-    if ($validator->passes()) {
-
-        $image = $request->file('image');
-        $ext = $image->getClientOriginalExtension();
-        $imageName = $id . '-' . time() . '.' . $ext;
-
-        // Create directory if not exists
-        if (!File::exists(public_path('profile_pic/thumb/'))) {
-            File::makeDirectory(public_path('profile_pic/thumb/'), 0755, true);
-        }
-
-        // Move original image
-        $image->move(public_path('profile_pic'), $imageName);
-
-        // Create thumbnail
-        $sourcePath = public_path('profile_pic/' . $imageName);
-        $thumbPath = public_path('profile_pic/thumb/' . $imageName);
-
-        $manager = new ImageManager(new Driver());
-        $img = $manager->read($sourcePath);
-        $img->cover(150, 150)->toPng()->save($thumbPath);
-
-        //Delete old Profile Pic
-        File::delete(public_path('/profile_pic/'.Auth::user()->image));
-        File::delete(public_path('/profile_pic/thumb/'.Auth::user()->image));
-
-        // Update DB
-        User::where('id', $id)->update(['image' => $imageName]);
-
-        session()->flash('success', 'Profile Picture updated successfully');
-
-        return response()->json([
-            'status' => true,
-            'errors' => []
         ]);
 
-    } else {
-        return response()->json([
-            'status' => false,
-            'errors' => $validator->errors()
+        if ($validator->passes()) {
+
+            $image = $request->file('image');
+            $ext = $image->getClientOriginalExtension();
+            $imageName = $id . '-' . time() . '.' . $ext;
+
+            // Create directory if not exists
+            if (!File::exists(public_path('profile_pic/thumb/'))) {
+                File::makeDirectory(public_path('profile_pic/thumb/'), 0755, true);
+            }
+
+            // Move original image
+            $image->move(public_path('profile_pic'), $imageName);
+
+            // Create thumbnail
+            $sourcePath = public_path('profile_pic/' . $imageName);
+            $thumbPath = public_path('profile_pic/thumb/' . $imageName);
+
+            $manager = new ImageManager(new Driver());
+            $img = $manager->read($sourcePath);
+            $img->cover(150, 150)->toPng()->save($thumbPath);
+
+            //Delete old Profile Pic
+            File::delete(public_path('/profile_pic/'.Auth::user()->image));
+            File::delete(public_path('/profile_pic/thumb/'.Auth::user()->image));
+
+            // Update DB
+            User::where('id', $id)->update(['image' => $imageName]);
+
+            session()->flash('success', 'Profile Picture updated successfully');
+
+            return response()->json([
+                'status' => true,
+                'errors' => []
+            ]);
+
+        } else {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
+    }
+
+    public function createJob(){
+
+        $categories = Category::orderBy('name', 'ASC')->where('status', 1)->get();
+
+        $jobTypes = JobType::orderBy('name', 'ASC')->where('status', 1)->get();
+
+        return view('front.account.job.create', [
+            'categories' => $categories,
+            'jobTypes' =>$jobTypes,
         ]);
     }
-}
-
-public function createJob(){
-
-    $categories = Category::orderBy('name', 'ASC')->where('status', 1)->get();
-
-    $jobTypes = JobType::orderBy('name', 'ASC')->where('status', 1)->get();
-
-    return view('front.account.job.create', [
-        'categories' => $categories,
-        'jobTypes' =>$jobTypes,
-    ]);
-}
 
 //
-public function saveJob(Request $request){
+    public function saveJob(Request $request){
 
         
-    $rules=[
-        'title'=>'required|min:5|max:200',
-        'category' =>'required',
-        'jobType' =>'required',
-        'vacancy' =>'required|integer',
-        'location' =>'required|max:50',
-        'description' =>'required',
-        'company_name' =>'required|min:3|max:75',
-    ];
+        $rules=[
+            'title'=>'required|min:5|max:200',
+            'category' =>'required',
+            'jobType' =>'required',
+            'vacancy' =>'required|integer',
+            'location' =>'required|max:50',
+            'description' =>'required',
+            'company_name' =>'required|min:3|max:75',
+        ];
     
-    $validator = Validator::make($request->all(),$rules);
+        $validator = Validator::make($request->all(),$rules);
 
-    if($validator->passes()){
+        if($validator->passes()){
 
-        $fremaa_job = new Fremaa_job();
+            $fremaa_job = new Fremaa_job();
 
-        $fremaa_job->title=$request->title;
-        $fremaa_job->category_id=$request->category;
-        $fremaa_job->job_type_id=$request->jobType;
-        $fremaa_job->user_id=Auth::user()->id;
-        $fremaa_job->vacancy=$request->vacancy;
-        $fremaa_job->salary=$request->salary;
-        $fremaa_job->location=$request->location;
-        $fremaa_job->description=$request->description;
-        $fremaa_job->benefits=$request->benefits;
-        $fremaa_job->responsibility=$request->responsibility;
-        $fremaa_job->qualifications=$request->qualifications;
-        $fremaa_job->experience=$request->experience;
-        $fremaa_job->keywords=$request->keywords;
-        $fremaa_job->company_name=$request->company_name;
-        $fremaa_job->company_location=$request->company_location;
-        $fremaa_job->company_website=$request->website;
+            $fremaa_job->title=$request->title;
+            $fremaa_job->category_id=$request->category;
+            $fremaa_job->job_type_id=$request->jobType;
+            $fremaa_job->user_id=Auth::user()->id;
+            $fremaa_job->vacancy=$request->vacancy;
+            $fremaa_job->salary=$request->salary;
+            $fremaa_job->location=$request->location;
+            $fremaa_job->description=$request->description;
+            $fremaa_job->benefits=$request->benefits;
+            $fremaa_job->responsibility=$request->responsibility;
+            $fremaa_job->qualifications=$request->qualifications;
+            $fremaa_job->experience=$request->experience;
+            $fremaa_job->keywords=$request->keywords;
+            $fremaa_job->company_name=$request->company_name;
+            $fremaa_job->company_location=$request->company_location;
+            $fremaa_job->company_website=$request->company_website;
 
-        $fremaa_job->save();
+            $fremaa_job->save();
 
-        session()->flash('success', 'Job Details added successfully');
+            session()->flash('success', 'Job Details added successfully');
 
-        return response()->json([
-            'status'=>true,
-            'errors' =>[]
-        ]);
+            return response()->json([
+                'status'=>true,
+                'errors' =>[]
+            ]);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'errors' =>$validator->errors()
+            ]);
+        }
+    }
 
-    }else{
-        return response()->json([
-            'status'=>false,
-            'errors' =>$validator->errors()
+    //this method will list the job for the logged in user
+    public function myJobs(){
+    
+        $jobs=Fremaa_job::where('user_id', Auth::user()->id)->with('jobType')->paginate(10);
+        return view('front.account.job.my-jobs', [
+            'jobs' => $jobs 
         ]);
     }
-}
 
-//this method will list the job for the logged in user
-public function myJobs(){
-    
-    $jobs=Fremaa_job::where('user_id', Auth::user()->id)->with('jobType')->paginate(10);
-    return view('front.account.job.my-jobs', [
-        'jobs' => $jobs 
-    ]);
-}
+    //This method will show the edit form
+    public function editJob(Request $request, $id){
 
-//This method will show the edit form
-public function editJob(Request $request, $id){
+        $categories = Category::orderBy('name', 'ASC')->where('status', 1)->get();
 
-     $categories = Category::orderBy('name', 'ASC')->where('status', 1)->get();
+        $jobTypes = JobType::orderBy('name', 'ASC')->where('status', 1)->get();
 
-    $jobTypes = JobType::orderBy('name', 'ASC')->where('status', 1)->get();
+        $job = Fremaa_job::where([
+            'user_id' =>Auth::user()->id,
+            'id' =>$id,
+        ])->first();
 
-    $job = Fremaa_job::where([
-        'user_id' =>Auth::user()->id,
-        'id' =>$id,
-    ])->first();
-
-    if ($job == null){
-        abort(404);
+        if ($job == null){
+            abort(404);
+        }
+        return view('front.account.job.edit',[
+            'categories' =>$categories,
+            'jobTypes' =>$jobTypes,
+            'job' => $job,
+        ]);
     }
-    return view('front.account.job.edit',[
-        'categories' =>$categories,
-        'jobTypes' =>$jobTypes,
-        'job' => $job,
-    ]);
-}
+
+    //
+    public function updateJob(Request $request, $id){
+
+        
+        $rules=[
+            'title'=>'required|min:5|max:200',
+            'category' =>'required',
+            'jobType' =>'required',
+            'vacancy' =>'required|integer',
+            'location' =>'required|max:50',
+            'description' =>'required',
+            'company_name' =>'required|min:3|max:75',
+        ];
+    
+        $validator = Validator::make($request->all(),$rules);
+
+        if($validator->passes()){
+
+            $fremaa_job = Fremaa_job::find($id);
+
+            $fremaa_job->title=$request->title;
+            $fremaa_job->category_id=$request->category;
+            $fremaa_job->job_type_id=$request->jobType;
+            $fremaa_job->user_id=Auth::user()->id;
+            $fremaa_job->vacancy=$request->vacancy;
+            $fremaa_job->salary=$request->salary;
+            $fremaa_job->location=$request->location;
+            $fremaa_job->description=$request->description;
+            $fremaa_job->benefits=$request->benefits;
+            $fremaa_job->responsibility=$request->responsibility;
+            $fremaa_job->qualifications=$request->qualifications;
+            $fremaa_job->experience=$request->experience;
+            $fremaa_job->keywords=$request->keywords;
+            $fremaa_job->company_name=$request->company_name;
+            $fremaa_job->company_location=$request->company_location;
+            $fremaa_job->company_website=$request->company_website;
+
+            $fremaa_job->save();
+
+            session()->flash('success', 'Job Details updated successfully');
+
+            return response()->json([
+                'status'=>true,
+                'errors' =>[]
+            ]);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'errors' =>$validator->errors()
+            ]);
+        }
+    }
 
 }

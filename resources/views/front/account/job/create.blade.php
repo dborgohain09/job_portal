@@ -153,13 +153,14 @@
 <script type="text/javascript">
     $("#createJobForm").submit(function(e){
         e.preventDefault(); // Stop form from submitting normally
-
+        $("button[type='submit']").prop('disabled', true);
         $.ajax({
             url: '{{ route("account.saveJob") }}',
             type: 'POST',
             dataType: 'json',
             data: $(this).serialize(), // serialize current form
             success: function(response) {
+                $("button[type='submit']").prop('disabled', false);
                 if(response.status === true){
 
                     $("input[name='title']").removeClass('is-invalid')   
