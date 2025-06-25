@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Route;
 // });
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/jobs', [Fremaa_jobsController::class, 'index'])->name('jobs');
+Route::get('/jobs/detail/{id}', [Fremaa_jobsController::class, 'details'])->name('jobDetail');
+Route::post('/apply-job', [Fremaa_jobsController::class, 'applyJob'])->name('applyJob');
 
 
 // Route::get('/account/login', [AccountController::class, 'login'])->name('account.login');
