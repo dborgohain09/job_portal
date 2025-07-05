@@ -72,7 +72,7 @@
                             <div class="pt-3 text-end">
                                 <a href="#" class="btn btn-secondary">Save</a>
                                 @if (Auth::check())
-                                    <a href="#" onclick="applyJob({{ $job->id }})" class="btn btn-primary">Apply</a>
+                                    <a href="javascript:void(0);" id="applyBtn" onclick="applyJob({{ $job->id }})" class="btn btn-primary">Apply</a>
                                 @else
                                     <a href="javascript:void(0);" class="btn btn-primary disabled">Login to Apply</a>
                                 @endif
@@ -124,7 +124,7 @@
         </div>
     </section>
 @endsection
-@section('customJs')
+{{-- @section('customJs')
     <script type="text/javascript">
         function applyJob(id){
             if (confirm("Are you sure you want yo apply for this job?")) {
@@ -134,7 +134,7 @@
                     data : {id:id},
                     dataType : 'json',
                     success : function(response) {                       
-                        window.location.href = "{{ url()->current() }}";
+                       window.location.href = "{{ url()->current() }}";                       
                     },
                     error: function(xhr) {
                         console.log("Request failed:", xhr.responseText);
@@ -144,4 +144,42 @@
             }
         }
     </script>
+@endsection --}}
+
+@section('customJs')
+<script type="text/javascript">
+    function showMessage(type, message) {
+        let alertHtml = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>`;
+        $('.job_details_header').before(alertHtml);
+    }
+
+    function applyJob(id) {
+        if (confirm("Are you sure you want to apply for this job?")) {
+            $.ajax({
+                url: '{{ route("applyJob") }}',
+                type: 'POST',
+                data: { id: id },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status) {
+                        showMessage('success', response.message);
+                        $('#applyBtn').prop('disabled', true).text('Applied');
+                    } else {
+                        showMessage('danger', response.message);
+                    }
+                },
+                error: function(xhr) {
+                    console.log("AJAX error:", xhr.responseText);
+                    showMessage('danger', 'Something went wrong. Please try again.');
+                }
+            });
+        }
+    }
+</script>
 @endsection
+
+
