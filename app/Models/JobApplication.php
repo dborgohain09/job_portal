@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class JobApplication extends Model
@@ -12,4 +13,10 @@ class JobApplication extends Model
         'employer_id',
         'applied_date',
     ];
+
+    use HasFactory;
+
+    public function job(){
+        return $this->belongsTo(Fremaa_job::class);
+    }
 }

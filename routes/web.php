@@ -43,4 +43,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/account/my-jobs/edit/{jobId}', [AccountController::class, 'editJob'])->name('account.editJob');
     Route::post('/account/update-job/{jobId}', [AccountController::class, 'updateJob'])->name('account.updateJob');
     Route::post('/account/delete-job', [AccountController::class, 'deleteJob'])->name('account.deleteJob');
+    Route::get('/account/my-jobs-applications', [AccountController::class, 'myJobApplications'])->name('account.myJobApplications');
+    Route::post('/account/remove-job-application', [AccountController::class, 'removeJobs'])->name('account.removeJobs');
 });

@@ -19,4 +19,8 @@ class Fremaa_job extends Model
         
         return $this->belongsTo(Category::class);
     }
+
+    public function applications(){
+        return $this->hasMany(JobApplication::class, 'job_id');
+    }
 }

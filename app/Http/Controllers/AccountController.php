@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Fremaa_job;
+use App\Models\JobApplication;
 use App\Models\JobType;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -400,6 +401,34 @@ class AccountController extends Controller
                 'status' => true
             ]);
 
+    }
+
+    public function myJobApplications(){
+        
+        $jobApplications = JobApplication::where('user_id', Auth::user()->id)
+                            ->with(['job', 'job.jobType', 'job.applications'])
+                            ->paginate(10);
+        //dd($jobs);
+        return view('front.account.job.my-job-applications',[
+            'jobApplications' => $jobApplications,
+        ]);
+    }
+
+    public function removeJobs(Request $request){
+        $jobApplication = JobApplication::where(['id' => $request->id, 'user_id' => Auth::user()->id])->first();
+
+        if($jobApplication == null) {
+            session()->flash('error', 'Job application not found');
+            return response()->json([
+                'status' => false,
+            ]);
+        }
+
+        JobApplication::find($request->id)->delete();
+        session()->flash('success', 'Job application removed successfully');
+            return response()->json([
+                'status' => true,
+            ]);
     }
 
 }

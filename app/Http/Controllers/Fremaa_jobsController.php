@@ -206,10 +206,9 @@ class Fremaa_jobsController extends Controller
         'employer' => $employer,
         'user' => Auth::user(),
         'job' => $job,
-
     ];
 
-    Mail::to()->send(new JobNotificationEmail($mailData));
+    Mail::to($employer->email)->send(new JobNotificationEmail($mailData));
 
     return response()->json([
         'status' => true,
