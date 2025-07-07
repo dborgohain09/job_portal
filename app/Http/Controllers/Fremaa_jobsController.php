@@ -1,16 +1,17 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Mail\JobNotificationEmail;
 use App\Models\Category;
 use App\Models\Fremaa_job;
 use App\Models\JobApplication;
 use App\Models\JobType;
+use App\Models\SavedJob;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+
+use Illuminate\Database\QueryException;
 
 class Fremaa_jobsController extends Controller
 {
@@ -62,11 +63,9 @@ class Fremaa_jobsController extends Controller
             $jobs = $jobs->orderBy('created_at', 'ASC');
         } else {
             $jobs = $jobs->orderBy('created_at', 'DESC');
-        }
-        
+        }        
 
         $jobs = $jobs->paginate(9);
-
 
         return view('front.fremaa_jobs',[
             'categories'=> $categories,
@@ -88,7 +87,24 @@ class Fremaa_jobsController extends Controller
             abort(404);
         }
 
-        return view('front.jobDetail', ['job' => $job]);
+        $count = 0;
+        if(Auth::user()){
+            $count = SavedJob::where([
+            'user_id' => Auth::user()->id,
+            'job_id' => $id
+        ])->count();
+        }
+
+        //fetch Applications
+
+        $applications = JobApplication::where(['job_id' => $id])->with('user')->get();
+
+        //dd ($applications);
+
+        return view('front.jobDetail', ['job' => $job, 
+                                        'count' => $count, 
+                                        'applications' =>$applications
+                                        ]);
     }
 
     // public function applyJob(Request $request){
@@ -156,64 +172,149 @@ class Fremaa_jobsController extends Controller
     //     ]);
     // }
 
-    public function applyJob(Request $request)
+    public function applyJob(Request $request){
+    
+        $id = $request->id;
+
+        $job = Fremaa_job::find($id);
+
+        if (!$job) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Job does not exist.'
+            ], 200);
+        }
+
+        // Prevent applying on your own job
+        if ($job->user_id == Auth::user()->id) {
+            return response()->json([
+                'status' => false,
+                'message' => 'You cannot apply on your own job.'
+            ], 200);
+        }
+
+        // Prevent duplicate applications
+        $alreadyApplied = JobApplication::where([
+            'user_id' => Auth::user()->id,
+            'job_id' => $id
+        ])->exists();
+
+        if ($alreadyApplied) {
+            return response()->json([
+                'status' => false,
+                'message' => 'You have already applied to this job.'
+            ], 200);
+        }
+
+        // Save the application
+        JobApplication::create([
+            'job_id' => $id,
+            'user_id' => Auth::user()->id,
+            'employer_id' => $job->user_id,
+            'applied_date' => now()
+        ]);
+
+        //Send notification email to Employer
+        $employer_id = $job->user_id;    
+        $employer = User::where('id', $employer_id)->first();
+        
+        $mailData =[
+            'employer' => $employer,
+            'user' => Auth::user(),
+            'job' => $job,
+        ];
+
+        Mail::to($employer->email)->send(new JobNotificationEmail($mailData));
+
+        return response()->json([
+            'status' => true,
+            'message' => 'You have successfully applied.'
+        ]);
+    }
+
+    //this method will be used to save a job to the save_job table
+
+    // public function saveJob(Request $request){
+
+    //     $id = $request->id;
+
+    //     $job = Fremaa_job::find($id);
+
+    //     session()->flash('error','Job not found');
+        
+    //     if($job == null){
+    //         return response()->json([
+    //             'status' => false,
+    //         ]);  
+    //     }
+
+    //     //check if user already saved the job
+    //     $count = SavedJob::where([
+    //         'user_id' => Auth::user()->id,
+    //         'job_id' => $id,
+    //     ])->count();
+
+    //     if($count >0){
+    //         session()->flash('error','You already saved to this job');
+    //         return response()->json([
+    //             'status' => false,
+    //         ]);
+    //     }
+
+    //     $saveJob = new SavedJob;
+    //     $saveJob-> job_id = $id;
+    //     $saveJob-> user_id =  Auth::user()->id;
+    //     $saveJob-> save();
+
+    //     session()->flash('success','You have successfully saved the job');
+    //         return response()->json([
+    //             'status' => true,
+    //         ]);
+    // }
+
+
+    
+
+public function saveJob(Request $request)
 {
     $id = $request->id;
 
     $job = Fremaa_job::find($id);
-
     if (!$job) {
         return response()->json([
             'status' => false,
-            'message' => 'Job does not exist.'
-        ], 200);
+            'message' => 'Job not found in the database.',
+        ], 404);
     }
 
-    // Prevent applying on your own job
-    if ($job->user_id == Auth::user()->id) {
+    $alreadySaved = SavedJob::where('user_id', Auth::id())
+                            ->where('job_id', $id)
+                            ->exists();
+
+    if ($alreadySaved) {
         return response()->json([
             'status' => false,
-            'message' => 'You cannot apply on your own job.'
-        ], 200);
+            'message' => 'You have already saved this job.',
+        ]);
     }
 
-    // Prevent duplicate applications
-    $alreadyApplied = JobApplication::where([
-        'user_id' => Auth::user()->id,
-        'job_id' => $id
-    ])->exists();
+    try {
+        $saveJob = new SavedJob();
+        $saveJob->job_id = $id;
+        $saveJob->user_id = Auth::id();
+        $saveJob->save();
 
-    if ($alreadyApplied) {
+        return response()->json([
+            'status' => true,
+            'message' => 'Job saved successfully.',
+        ]);
+    } catch (QueryException $e) {
         return response()->json([
             'status' => false,
-            'message' => 'You have already applied to this job.'
-        ], 200);
+            'message' => 'Database error: ' . $e->getMessage(),
+        ], 500);
     }
-
-    // Save the application
-    JobApplication::create([
-        'job_id' => $id,
-        'user_id' => Auth::user()->id,
-        'employer_id' => $job->user_id,
-        'applied_date' => now()
-    ]);
-
-    //Send notification email to Employer
-    $employer_id = $job->user_id;    
-    $employer = User::where('id', $employer_id)->first();
-    
-    $mailData =[
-        'employer' => $employer,
-        'user' => Auth::user(),
-        'job' => $job,
-    ];
-
-    Mail::to($employer->email)->send(new JobNotificationEmail($mailData));
-
-    return response()->json([
-        'status' => true,
-        'message' => 'You have successfully applied.'
-    ]);
 }
+
 
 }

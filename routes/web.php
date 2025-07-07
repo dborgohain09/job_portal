@@ -13,6 +13,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/jobs', [Fremaa_jobsController::class, 'index'])->name('jobs');
 Route::get('/jobs/detail/{id}', [Fremaa_jobsController::class, 'details'])->name('jobDetail');
 Route::post('/apply-job', [Fremaa_jobsController::class, 'applyJob'])->name('applyJob');
+Route::post('/save-job', [Fremaa_jobsController::class, 'saveJob'])->name('saveJob');
 
 
 // Route::get('/account/login', [AccountController::class, 'login'])->name('account.login');
@@ -45,4 +46,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/account/delete-job', [AccountController::class, 'deleteJob'])->name('account.deleteJob');
     Route::get('/account/my-jobs-applications', [AccountController::class, 'myJobApplications'])->name('account.myJobApplications');
     Route::post('/account/remove-job-application', [AccountController::class, 'removeJobs'])->name('account.removeJobs');
+    Route::get('/account/saved-jobs', [AccountController::class, 'savedJobs'])->name('account.savedJobs');
+    Route::post('/account/remove-saved-job', [AccountController::class, 'removeSavedJob'])->name('account.removeSavedJob');
 });
