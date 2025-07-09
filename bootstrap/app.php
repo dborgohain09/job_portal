@@ -18,6 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo('/account/login');
         $middleware->redirectUsersTo('/account/profile');
 
+         $middleware->alias([
+            'check.admin' => \App\Http\Middleware\CheckAdmin::class,
+        ]);
+
         // $middleware->alias([
         //     'auth' => Authenticate::class,
         //     'guest' => RedirectIfAuthenticated::class,

@@ -52,25 +52,31 @@
                 </div>
 
                 <div class="card border-0 shadow mb-4">
-                    <div class="card-body p-4">
-                        <h3 class="fs-4 mb-1">Change Password</h3>
-                        <div class="mb-4">
-                            <label for="" class="mb-2">Old Password*</label>
-                            <input type="password" placeholder="Old Password" class="form-control">
+                    <form action="" method="POST" id="changePassworForm" name="changePassworForm">
+                        <div class="card-body p-4">
+                            <h3 class="fs-4 mb-1">Change Password</h3>
+                            <div class="mb-4">
+                                <label for="" class="mb-2">Old Password*</label>
+                                <input type="password" name="old_password" id="old_password" placeholder="Old Password" class="form-control">
+                                <p></p>
+                            </div>
+                            <div class="mb-4">
+                                <label for="" class="mb-2">New Password*</label>
+                                <input type="password" name="new_password" id="new_password" placeholder="New Password" class="form-control">
+                                <p></p>
+                            </div>
+                            <div class="mb-4">
+                                <label for="" class="mb-2">Confirm Password*</label>
+                                <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm Password" class="form-control">
+                                <p></p>
+                            </div>                        
                         </div>
-                        <div class="mb-4">
-                            <label for="" class="mb-2">New Password*</label>
-                            <input type="password" placeholder="New Password" class="form-control">
+                        <div class="card-footer  p-4">
+                            <button type="submit" class="btn btn-primary">Update</button>
                         </div>
-                        <div class="mb-4">
-                            <label for="" class="mb-2">Confirm Password*</label>
-                            <input type="password" placeholder="Confirm Password" class="form-control">
-                        </div>                        
-                    </div>
-                    <div class="card-footer  p-4">
-                        <button type="button" class="btn btn-primary">Update</button>
-                    </div>
-                </div>                
+                    </form>
+                </div>   
+
             </div>
         </div>
     </div>
@@ -125,6 +131,77 @@
                             .html(errors.email);
                     } else {
                         $("input[name='email']").removeClass('is-invalid')
+                            .siblings('p')
+                            .removeClass('invalid-feedback')
+                            .html('');
+                    }
+                }
+            },
+            error: function(xhr) {
+                console.log("Error occurred:", xhr.responseText);
+                alert("An error occurred while processing the request.");
+            }
+        });
+    });
+
+
+     $("#changePassworForm").submit(function(e){
+        e.preventDefault(); // Stop form from submitting normally
+
+        $.ajax({
+            url: '{{ route("account.updatePassword") }}',
+            type: 'POST',
+            dataType: 'json',
+            data: $(this).serialize(), // serialize current form
+            success: function(response) {
+                if(response.status === true){
+
+                    $("input[name='name']").removeClass('is-invalid')   
+                        .siblings('p')
+                        .removeClass('invalid-feedback')
+                        .html('');
+
+                    $("input[name='email']").removeClass('is-invalid')
+                        .siblings('p')
+                        .removeClass('invalid-feedback')
+                        .html('');
+                        
+                    window.location.href="{{ route('account.profile') }}";
+                    // Optionally reload page or show a success message
+                } else {
+                    var errors = response.errors;
+
+                    if(errors.old_password){
+                        $("input[name='old_password']").addClass('is-invalid')
+                            .siblings('p')
+                            .addClass('invalid-feedback')
+                            .html(errors.old_password);
+                    } else {
+                        $("input[name='old_password']").removeClass('is-invalid')
+                            .siblings('p')
+                            .removeClass('invalid-feedback')
+                            .html('');
+                    }
+
+                    if(errors.new_password){
+                        $("input[name='new_password']").addClass('is-invalid')
+                            .siblings('p')
+                            .addClass('invalid-feedback')
+                            .html(errors.new_password);
+                    } else {
+                        $("input[name='new_password']").removeClass('is-invalid')
+                            .siblings('p')
+                            .removeClass('invalid-feedback')
+                            .html('');
+                    }
+
+                    if(errors.confirm_password){
+                        $("input[name='confirm_password']").addClass('is-invalid')
+                            .siblings('p')
+                            .addClass('invalid-feedback')
+                            .html(errors.confirm_password);
+                    } else {
+                        $("input[name='confirm_password']").removeClass('is-invalid')
                             .siblings('p')
                             .removeClass('invalid-feedback')
                             .html('');

@@ -1,10 +1,13 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\admin\DashboardController;
+use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\Fremaa_jobsController;
 use App\Http\Controllers\HomeController;
 use App\Models\Fremaa_job;
 use Illuminate\Support\Facades\Route;
+
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -14,6 +17,10 @@ Route::get('/jobs', [Fremaa_jobsController::class, 'index'])->name('jobs');
 Route::get('/jobs/detail/{id}', [Fremaa_jobsController::class, 'details'])->name('jobDetail');
 Route::post('/apply-job', [Fremaa_jobsController::class, 'applyJob'])->name('applyJob');
 Route::post('/save-job', [Fremaa_jobsController::class, 'saveJob'])->name('saveJob');
+
+
+Route::get('admin/dashboard', [DashboardController::class, 'index'])->middleware('check.admin')->name('admin.dashboard');
+Route::get('admin/users', [UserController::class, 'index'])->middleware('check.admin')->name('admin.users');
 
 
 // Route::get('/account/login', [AccountController::class, 'login'])->name('account.login');
@@ -48,4 +55,5 @@ Route::middleware('auth')->group(function () {
     Route::post('/account/remove-job-application', [AccountController::class, 'removeJobs'])->name('account.removeJobs');
     Route::get('/account/saved-jobs', [AccountController::class, 'savedJobs'])->name('account.savedJobs');
     Route::post('/account/remove-saved-job', [AccountController::class, 'removeSavedJob'])->name('account.removeSavedJob');
+    Route::post('/account/update-password', [AccountController::class, 'updatePassword'])->name('account.updatePassword');
 });
