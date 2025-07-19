@@ -2,10 +2,10 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\admin\DashboardController;
+use App\Http\Controllers\admin\Fremaa_jobController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\Fremaa_jobsController;
 use App\Http\Controllers\HomeController;
-use App\Models\Fremaa_job;
 use Illuminate\Support\Facades\Route;
 
 
@@ -21,6 +21,10 @@ Route::post('/save-job', [Fremaa_jobsController::class, 'saveJob'])->name('saveJ
 
 Route::get('admin/dashboard', [DashboardController::class, 'index'])->middleware('check.admin')->name('admin.dashboard');
 Route::get('admin/users', [UserController::class, 'index'])->middleware('check.admin')->name('admin.users');
+Route::get('admin/users/{id}', [UserController::class, 'edit'])->middleware('check.admin')->name('admin.users.edit');
+Route::put('admin/users/{id}', [UserController::class, 'update'])->middleware('check.admin')->name('admin.users.update');
+Route::delete('admin/users', [UserController::class, 'destory'])->middleware('check.admin')->name('admin.users.destory');
+Route::get('admin/jobs', [Fremaa_jobController::class, 'index'])->middleware('check.admin')->name('admin.jobs');
 
 
 // Route::get('/account/login', [AccountController::class, 'login'])->name('account.login');

@@ -23,4 +23,8 @@ class Fremaa_job extends Model
     public function applications(){
         return $this->hasMany(JobApplication::class, 'job_id');
     }
+    public function user(){
+        
+        return $this->belongsTo(User::class);
+    }
 }

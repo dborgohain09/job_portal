@@ -81,14 +81,11 @@
         </div>
     </div>
 </section>
-
 @endsection
-
 @section('customJs')
 <script type="text/javascript">
     $("#userForm").submit(function(e){
         e.preventDefault(); // Stop form from submitting normally
-
         $.ajax({
             url: '{{ route("account.updateProfile") }}',
             type: 'PUT',
@@ -96,22 +93,18 @@
             data: $(this).serialize(), // serialize current form
             success: function(response) {
                 if(response.status === true){
-
                     $("input[name='name']").removeClass('is-invalid')   
                         .siblings('p')
                         .removeClass('invalid-feedback')
                         .html('');
-
                     $("input[name='email']").removeClass('is-invalid')
                         .siblings('p')
                         .removeClass('invalid-feedback')
-                        .html('');
-                        
+                        .html('');                        
                     window.location.href="{{ route('account.profile') }}";
                     // Optionally reload page or show a success message
                 } else {
                     var errors = response.errors;
-
                     if(errors.name){
                         $("input[name='name']").addClass('is-invalid')
                             .siblings('p')
@@ -123,7 +116,6 @@
                             .removeClass('invalid-feedback')
                             .html('');
                     }
-
                     if(errors.email){
                         $("input[name='email']").addClass('is-invalid')
                             .siblings('p')
@@ -143,11 +135,8 @@
             }
         });
     });
-
-
-     $("#changePassworForm").submit(function(e){
+    $("#changePassworForm").submit(function(e){
         e.preventDefault(); // Stop form from submitting normally
-
         $.ajax({
             url: '{{ route("account.updatePassword") }}',
             type: 'POST',
