@@ -25,7 +25,8 @@ Route::get('admin/users/{id}', [UserController::class, 'edit'])->middleware('che
 Route::put('admin/users/{id}', [UserController::class, 'update'])->middleware('check.admin')->name('admin.users.update');
 Route::delete('admin/users', [UserController::class, 'destory'])->middleware('check.admin')->name('admin.users.destory');
 Route::get('admin/jobs', [Fremaa_jobController::class, 'index'])->middleware('check.admin')->name('admin.jobs');
-
+Route::get('admin/jobs/edit/{id}', [Fremaa_jobController::class, 'edit'])->middleware('check.admin')->name('admin.jobs.edit');
+Route::put('admin/jobs/{id}', [Fremaa_jobController::class, 'update'])->middleware('check.admin')->name('admin.jobs.update');
 
 // Route::get('/account/login', [AccountController::class, 'login'])->name('account.login');
 // Route::post('/account/authenticate', [AccountController::class, 'authenticate'])->name('account.authenticate');
