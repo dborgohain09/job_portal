@@ -3,9 +3,11 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\Fremaa_jobController;
+use App\Http\Controllers\admin\JobApplicationController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\Fremaa_jobsController;
 use App\Http\Controllers\HomeController;
+use App\Models\JobApplication;
 use Illuminate\Support\Facades\Route;
 
 
@@ -18,6 +20,11 @@ Route::get('/jobs/detail/{id}', [Fremaa_jobsController::class, 'details'])->name
 Route::post('/apply-job', [Fremaa_jobsController::class, 'applyJob'])->name('applyJob');
 Route::post('/save-job', [Fremaa_jobsController::class, 'saveJob'])->name('saveJob');
 
+Route::get('/forgot-password', [AccountController::class, 'forgotPassword'])->name('account.forgotPassword');
+Route::post('/process-forgot-password', [AccountController::class, 'processForgotPassword'])->name('account.processForgotPassword');
+Route::get('/reset-password/{token}', [AccountController::class, 'resetPassword'])->name('account.resetPassword');
+Route::post('/process-reset-password', [AccountController::class, 'processResetPassword'])->name('account.processResetPassword');
+
 
 Route::get('admin/dashboard', [DashboardController::class, 'index'])->middleware('check.admin')->name('admin.dashboard');
 Route::get('admin/users', [UserController::class, 'index'])->middleware('check.admin')->name('admin.users');
@@ -27,6 +34,9 @@ Route::delete('admin/users', [UserController::class, 'destory'])->middleware('ch
 Route::get('admin/jobs', [Fremaa_jobController::class, 'index'])->middleware('check.admin')->name('admin.jobs');
 Route::get('admin/jobs/edit/{id}', [Fremaa_jobController::class, 'edit'])->middleware('check.admin')->name('admin.jobs.edit');
 Route::put('admin/jobs/{id}', [Fremaa_jobController::class, 'update'])->middleware('check.admin')->name('admin.jobs.update');
+Route::delete('admin/jobs', [Fremaa_jobController::class, 'destroy'])->middleware('check.admin')->name('admin.jobs.destroy');
+Route::get('admin/job-application', [JobApplicationController::class, 'index'])->middleware('check.admin')->name('admin.jobApplications');
+Route::delete('admin/job-application', [JobApplicationController::class, 'destroy'])->middleware('check.admin')->name('admin.jobApplications.destroy');
 
 // Route::get('/account/login', [AccountController::class, 'login'])->name('account.login');
 // Route::post('/account/authenticate', [AccountController::class, 'authenticate'])->name('account.authenticate');

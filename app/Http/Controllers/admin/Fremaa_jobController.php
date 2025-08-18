@@ -67,6 +67,9 @@ class Fremaa_jobController extends Controller
             $fremaa_job->company_location=$request->company_location;
             $fremaa_job->company_website=$request->company_website;
 
+
+            $fremaa_job->status=$request->status;
+            $fremaa_job->isFeatured = (!empty($request->isFeatured)) ? $request->isFeatured : 0;
             $fremaa_job->save();
 
             session()->flash('success', 'Job Details updated successfully');
@@ -81,5 +84,23 @@ class Fremaa_jobController extends Controller
                 'errors' =>$validator->errors()
             ]);
         }
+    }
+    public function destroy(Request $request){
+        $id = $request->id;
+
+        $job = Fremaa_job::find($id);
+
+        if($job == null){
+            session()->flash('error', 'Either Job deleted or not found');
+            return response()->json([
+                'status'=>false,
+            ]);
+        }
+
+        $job ->delete();
+        session()->flash('success', 'Job deleted successfully');
+            return response()->json([
+                'status'=>true,
+            ]);
     }
 }

@@ -15,10 +15,8 @@
                 </div>
             </div>
         </div>
-
         <div class="row pt-5">
             <div class="col-md-4 col-lg-3 sidebar mb-4">
-
                 <form action="" name="searchForm" id="searchForm">
                     <div class="card border-0 shadow p-4">
                         <div class="mb-4">
@@ -35,11 +33,8 @@
                                 <option value="">Select a Category</option>
                                 @if ($categories)
                                     @foreach ($categories as $category)
-
                                         <option {{ (Request::get('category') ==$category->id)?'selected':'' }} value="{{ $category -> id }}">{{ $category -> name }}</option>
-                                        
-                                    @endforeach
-                                    
+                                     @endforeach
                                 @endif
                             </select>
                         </div>
@@ -110,6 +105,9 @@
                                             </div>
                                         </div>                                
                                     @endforeach
+                                    <div class="col-md-12">
+                                        {{ $jobs->withQueryString()->links() }}
+                                    </div>
                                     @else
                                     <div class="col-md-12">Job not found.</div>                            
                                 @endif                                                     
